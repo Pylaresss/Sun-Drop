@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+  <meta charset="utf-8">
+  <title>AquaPulse Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="topbar">
+    <button class="hamburger" id="menuBtn">☰</button>
+
+    <img src="image/Aquapulse.jpeg" class="logo">
+
+    <h1 class="title">AquaPulse Dashboard</h1>
+  </header>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2>Menu</h2>
+      <button class="closebtn" id="closeBtn" aria-label="Close menu">✕</button>
+    </div>
+
+    <a href="#" class="navlink active" data-page="live">🏠 Dashboard</a>
+    <a href="#" class="navlink" data-page="history">📈 Sensors history</a>
+    <a href="#" class="navlink" data-page="weather">🌦️ Weather forecast</a>
+    <a href="#" class="navlink" data-page="about">ℹ️ About project</a>
+    <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+  </nav>
+
+  <div class="overlay" id="overlay"></div>
+
+  <!-- MAIN CONTENT -->
+  <main class="content">
+
+    <!-- PAGE 1 : LIVE DASHBOARD -->
+    <section class="page active" id="page-live">
+      <div class="grid">
+
+        <div class="card kpi-card">
+          <p>Irrigation Status</p>
+          <h1 id="irrigation">--</h1>
+        </div>
+
+        <div class="card kpi-card">
+          <p>Soil Moisture</p>
+
+          <div class="moist-wrap">
+            <div class="moist-bar">
+              <div class="moist-fill" id="moistFill"></div>
+            </div>
+            <div class="moist-scale">
+              <span>0%</span><span>100%</span>
+            </div>
+          </div>
+
+          <h1 id="moist">--</h1>
+        </div>
+
+        <div class="card kpi-card">
+          <p>Water Tank</p>
+          <h1 id="tankStatus">--</h1>
+          <h2 id="tankPercent">--</h2>
+        </div>
+
+        <div class="card kpi-card">
+          <p>Temperature</p>
+
+          <div class="thermo-container">
+              <div class="thermo">
+                  <div class="thermo-fill" id="thermoFill"></div>
+              </div>
+              <div class="thermo-bulb"></div>
+          </div>
+
+          <h1 id="temp">--</h1>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PAGE 2 : HISTORY -->
+    <section class="page" id="page-history">
+      <div class="card big">
+        <h2>📈 Sensors history</h2>
+
+        <div class="controls">
+          <label>Points:
+            <select id="historyPoints">
+              <option value="60">60</option>
+              <option value="120" selected>120</option>
+              <option value="240">240</option>
+              <option value="480">480</option>
+            </select>
+          </label>
+          <button id="refreshHistory">Refresh</button>
+        </div>
+
+        <div class="charts">
+          <div class="chartCard">
+            <h3>Temperature (°C)</h3>
+            <canvas id="c1"></canvas>
+          </div>
+
+          <div class="chartCard">
+            <h3>Air humidity (%)</h3>
+            <canvas id="c2"></canvas>
+          </div>
+
+          <div class="chartCard">
+            <h3>Soil moisture (%)</h3>
+            <canvas id="c3"></canvas>
+          </div>
+
+          <div class="chartCard">
+            <h3>Water level (cm)</h3>
+            <canvas id="c4"></canvas>
+          </div>
+
+          <div class="chartCard">
+            <h3>Water level (%)</h3>
+            <canvas id="c5"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 3 : WEATHER -->
+    <section class="page" id="page-weather">
+      <div class="card big">
+        <h2>🌦️ Weather forecast — Alakamisy-Ambohimaha (MG)</h2>
+        <p class="hint">Forecast data (7 days) used to optimize irrigation decisions.</p>
+
+        <div class="weatherGrid">
+          <div class="weatherCard">
+            <h3>Today (Tmin → Tmax)</h3>
+            <p id="w_today">--</p>
+          </div>
+
+          <div class="weatherCard">
+            <h3>Rain next 24h</h3>
+            <p id="w_rain24">--</p>
+          </div>
+
+          <div class="weatherCard">
+            <h3>Wind max today</h3>
+            <p id="w_wind">--</p>
+          </div>
+        </div>
+
+        <h3 style="margin-top:18px;">Next 7 days</h3>
+        <div class="weatherTableWrap">
+          <table class="weatherTable" id="w_table">
+            <thead>
+              <tr>
+                <th>Date</th><th>Tmin</th><th>Tmax</th><th>Rain</th><th>Wind max</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 4 : ABOUT -->
+    <section class="page" id="page-about">
+
+    <div class="card big">
+
+    <h1>About the Project</h1>
+
+    <h2>Solar Powered Smart Irrigation System for Sustainable Agriculture</h2>
+
+    <p>
+    Agriculture is one of the most important sectors worldwide, yet it faces major
+    challenges such as water scarcity, climate variability, and the need to optimize
+    energy consumption. Traditional irrigation systems often rely on manual operation
+    or fixed schedules, which can lead to inefficient water usage and unnecessary
+    energy consumption.
+    </p>
+
+    <p>
+    This project proposes a <b>solar-powered smart irrigation system</b> designed to
+    provide a sustainable and energy-efficient solution for small-scale agriculture.
+    The system combines renewable energy, environmental sensors, and IoT technologies
+    to automate irrigation based on real-time environmental conditions.
+    </p>
+
+    <h2>System Overview</h2>
+
+    <p>
+    The irrigation system is powered by a photovoltaic solar panel that charges a
+    battery used to supply energy to the entire system. A microcontroller (ESP32)
+    collects data from several sensors installed in the environment.
+    </p>
+
+    <ul>
+    <li>Soil moisture sensor</li>
+    <li>Temperature and humidity sensor</li>
+    <li>Ultrasonic sensor to monitor water tank level</li>
+    <li>Energy monitoring sensors</li>
+    </ul>
+
+    <p>
+    Using this information, the system determines when irrigation is necessary and
+    automatically activates a water valve to irrigate the field.
+    </p>
+
+    <h2>Smart Irrigation Decision</h2>
+
+    <p>
+    Unlike traditional irrigation systems, this solution integrates a decision logic
+    based on environmental data and weather forecasts.
+    </p>
+
+    <ul>
+    <li>Soil humidity level</li>
+    <li>Current temperature</li>
+    <li>Water level in the tank</li>
+    <li>Weather forecast for the next 24 hours</li>
+    </ul>
+
+    <p>
+    For example, if rainfall is expected, the system can recommend delaying irrigation
+    to avoid wasting water.
+    </p>
+
+    <h2>IoT Monitoring Platform</h2>
+
+    <p>
+    All sensor data is transmitted to the cloud using the ESP32 Wi-Fi connectivity.
+    The data is stored and visualized using ThingSpeak, allowing users to monitor
+    the irrigation system remotely.
+    </p>
+
+    <p>
+    A custom web dashboard was developed to display:
+    </p>
+
+    <ul>
+    <li>Soil moisture level</li>
+    <li>Water tank level</li>
+    <li>Temperature</li>
+    <li>Irrigation status</li>
+    <li>Weather forecast</li>
+    <li>Irrigation recommendations</li>
+    </ul>
+
+    <h2>Project Team</h2>
+
+    <div class="team-grid">
+
+      <div class="team-member">
+        <img src="image/eva.jpg" alt="Eva Blum">
+        <h3>Eva Blum</h3>
+        <p>Project coordination</p>
+      </div>
+
+      <div class="team-member">
+        <img src="image/manon.jpg" alt="Manon Dhaine">
+        <h3>Manon Dhaine</h3>
+        <p>System design</p>
+      </div>
+
+      <div class="team-member">
+        <img src="image/jeany.jpg" alt="Jeany Han">
+        <h3>Jeany Han</h3>
+        <p>IoT platform</p>
+      </div>
+
+    </div>
+
+    </div>
+
+    </section>
+
+  </main>
+
+  <!-- IMPORTANT: Chart.js BEFORE script.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js"></script>
+
+</body>
+
+</html>

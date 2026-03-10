@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     live: document.getElementById("page-live"),
     history: document.getElementById("page-history"),
     weather: document.getElementById("page-weather"),
+    plants: document.getElementById("page-plants"),
     about: document.getElementById("page-about"),
   };
 
@@ -314,3 +315,36 @@ function logout(){
   window.location.href = "login.html";
 
 }
+
+// ===================== PLANTS / ESP SIMULATION =====================
+document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("espModal");
+  const closeModal = document.getElementById("closeModal");
+  const modalPlantTitle = document.getElementById("modalPlantTitle");
+
+  document.querySelectorAll(".esp-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      const plantName = button.dataset.plant;
+
+      if (modalPlantTitle) {
+        modalPlantTitle.innerText = plantName;
+      }
+
+      if (modal) {
+        modal.classList.add("show");
+      }
+
+      console.log(`ESP updated for ${plantName}`);
+    });
+  });
+
+  closeModal?.addEventListener("click", () => {
+    modal?.classList.remove("show");
+  });
+
+  window.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.classList.remove("show");
+    }
+  });
+});

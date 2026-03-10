@@ -28,6 +28,7 @@
     <a href="#" class="navlink active" data-page="live">🏠 Dashboard</a>
     <a href="#" class="navlink" data-page="history">📈 Sensors history</a>
     <a href="#" class="navlink" data-page="weather">🌦️ Weather forecast</a>
+    <a href="#" class="navlink" data-page="plants">🌱 Plant profiles</a>
     <a href="#" class="navlink" data-page="about">ℹ️ About project</a>
     <button class="logout-btn" onclick="logout()">🚪 Logout</button>
   </nav>
@@ -166,7 +167,81 @@
       </div>
     </section>
 
-    <!-- PAGE 4 : ABOUT -->
+
+    <!-- PAGE 4 : PLANTS -->
+    <section class="page" id="page-plants">
+      <div class="card big">
+        <h2>🌱 Plant profiles</h2>
+        <p class="hint">Simulation of crop settings sent to the ESP board.</p>
+
+        <div class="plants-grid">
+          <div class="plant-card">
+            <img src="image/tomato.jpg" alt="Tomato" class="plant-img">
+            <h3>Tomato</h3>
+            <p><strong>Soil moisture:</strong> 60%</p>
+            <p><strong>Temperature:</strong> 22–28°C</p>
+            <button class="esp-btn" data-plant="Tomato">Update ESP</button>
+          </div>
+
+          <div class="plant-card">
+            <img src="image/lettuce.jpg" alt="Lettuce" class="plant-img">
+            <h3>Lettuce</h3>
+            <p><strong>Soil moisture:</strong> 70%</p>
+            <p><strong>Temperature:</strong> 15–22°C</p>
+            <button class="esp-btn" data-plant="Lettuce">Update ESP</button>
+          </div>
+
+          <div class="plant-card">
+            <img src="image/strawberries.jpg" alt="Strawberry" class="plant-img">
+            <h3>Strawberry</h3>
+            <p><strong>Soil moisture:</strong> 65%</p>
+            <p><strong>Temperature:</strong> 18–26°C</p>
+            <button class="esp-btn" data-plant="Strawberry">Update ESP</button>
+          </div>
+
+          <div class="plant-card">
+            <img src="image/carrots.jpg" alt="Carrot" class="plant-img">
+            <h3>Carrot</h3>
+            <p><strong>Soil moisture:</strong> 55%</p>
+            <p><strong>Temperature:</strong> 16–24°C</p>
+            <button class="esp-btn" data-plant="Carrot">Update ESP</button>
+          </div>
+
+          <div class="plant-card">
+            <img src="image/basil.jpg" alt="Basil" class="plant-img">
+            <h3>Basil</h3>
+            <p><strong>Soil moisture:</strong> 60%</p>
+            <p><strong>Temperature:</strong> 20–30°C</p>
+            <button class="esp-btn" data-plant="Basil">Update ESP</button>
+          </div>
+
+          <div class="plant-card">
+            <img src="image/watermelon.jpg" alt="Watermelon" class="plant-img">
+            <h3>Watermelon</h3>
+            <p><strong>Soil moisture:</strong> 50%</p>
+            <p><strong>Temperature:</strong> 24–32°C</p>
+            <button class="esp-btn" data-plant="Watermelon">Update ESP</button>
+          </div>
+
+          <div class="plant-card">
+            <img src="image/cucumber.jpg" alt="Cucumber" class="plant-img">
+            <h3>Cucumber</h3>
+            <p><strong>Soil moisture:</strong> 75%</p>
+            <p><strong>Temperature:</strong> 18–30°C</p>
+            <button class="esp-btn" data-plant="Cucumber">Update ESP</button>
+          </div>
+
+          <div class="plant-card">
+            <img src="image/pepper.jpg" alt="Pepper" class="plant-img">
+            <h3>Pepper</h3>
+            <p><strong>Soil moisture:</strong> 65%</p>
+            <p><strong>Temperature:</strong> 20–28°C</p>
+            <button class="esp-btn" data-plant="Pepper">Update ESP</button>
+          </div>
+        </div>
+    </section>
+
+    <!-- PAGE 5 : ABOUT -->
     <section class="page" id="page-about">
 
     <div class="card big">
@@ -279,6 +354,15 @@
     </section>
 
   </main>
+
+  <!-- ESP POPUP -->
+  <div class="modal" id="espModal">
+    <div class="modal-content">
+      <span class="close-modal" id="closeModal">&times;</span>
+      <h3 id="modalPlantTitle">Plant</h3>
+      <p>ESP updated</p>
+    </div>
+  </div>
 
   <!-- IMPORTANT: Chart.js BEFORE script.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

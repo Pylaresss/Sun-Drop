@@ -554,3 +554,26 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+
+// ===================== DARK MODE =====================
+document.addEventListener("DOMContentLoaded", () => {
+  const toggleBtn = document.getElementById("darkModeToggle");
+
+  // Load saved mode
+  const savedMode = localStorage.getItem("darkMode");
+  if (savedMode === "true") {
+    document.body.classList.add("dark");
+    if (toggleBtn) toggleBtn.innerText = "☀️";
+  }
+
+  toggleBtn?.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+
+    const isDark = document.body.classList.contains("dark");
+
+    localStorage.setItem("darkMode", isDark);
+
+    toggleBtn.innerText = isDark ? "☀️" : "🌙";
+  });
+});

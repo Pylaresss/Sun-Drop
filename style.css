@@ -942,3 +942,222 @@ padding-left: 20px;
 .hidden{
   display: none !important;
 }
+
+.dark-toggle{
+  margin-left: auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.15);
+  background: rgba(255,255,255,0.8);
+  font-size: 20px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.dark-toggle:hover{
+  transform: scale(1.05);
+}
+
+/* ===== DARK MODE ===== */
+
+body.dark{
+  color: #e5e7eb;
+}
+
+/* Overlay plus sombre */
+body.dark::before{
+  background: rgba(0,0,0,0.55);
+}
+
+/* Topbar */
+body.dark .topbar{
+  background: rgba(30,41,59,0.6);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Cards */
+body.dark .card,
+body.dark .chartCard,
+body.dark .plant-card,
+body.dark .weatherCard{
+  background: rgba(30,41,59,0.5);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Sidebar */
+body.dark .sidebar{
+  background: rgba(30,41,59,0.9);
+}
+
+/* Buttons */
+body.dark button{
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
+/* Inputs */
+body.dark input{
+  background: rgba(255,255,255,0.1);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* ===== DARK MODE FIXES ===== */
+
+/* Texte global */
+body.dark,
+body.dark h1,
+body.dark h2,
+body.dark h3,
+body.dark p,
+body.dark li,
+body.dark span,
+body.dark label,
+body.dark strong,
+body.dark td,
+body.dark th {
+  color: #f3f4f6;
+}
+
+/* Titres un peu plus lumineux */
+body.dark .title,
+body.dark .card.big h2,
+body.dark #page-about h1,
+body.dark #page-about h2 {
+  color: #ffffff;
+}
+
+/* Topbar */
+body.dark .topbar{
+  background: rgba(15, 23, 42, 0.65);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Sidebar */
+body.dark .sidebar{
+  background: rgba(15, 23, 42, 0.92);
+}
+
+body.dark .sidebar-header h2,
+body.dark .navlink,
+body.dark .logout-btn{
+  color: #f3f4f6;
+}
+
+body.dark .navlink:hover{
+  background: rgba(255,255,255,0.08);
+}
+
+body.dark .navlink.active{
+  background: rgba(37,99,235,0.20);
+  border: 1px solid rgba(96,165,250,0.35);
+}
+
+/* Boutons topbar / sidebar */
+body.dark .hamburger,
+body.dark .closebtn,
+body.dark .dark-toggle{
+  background: rgba(255,255,255,0.08);
+  color: #ffffff;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+/* Cards */
+body.dark .card,
+body.dark .chartCard,
+body.dark .plant-card,
+body.dark .weatherCard,
+body.dark .energy-grid .chartCard {
+  background: linear-gradient(
+    135deg,
+    rgba(30, 41, 59, 0.72),
+    rgba(15, 23, 42, 0.58)
+  );
+  border: 1px solid rgba(255,255,255,0.10);
+  color: #f3f4f6;
+}
+
+/* About page spécifique */
+body.dark #page-about,
+body.dark #page-about p,
+body.dark #page-about li,
+body.dark #page-about ul {
+  color: #e5e7eb;
+}
+
+body.dark #page-about h2 {
+  color: #93c5fd;
+}
+
+/* Weather cards */
+body.dark .weatherCard h3,
+body.dark .weatherCard p {
+  color: #f9fafb;
+}
+
+/* Weather table */
+body.dark .weatherTableWrap{
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+body.dark .weatherTable{
+  background: rgba(15, 23, 42, 0.72);
+  color: #f3f4f6;
+}
+
+body.dark .weatherTable th{
+  background: rgba(255,255,255,0.04);
+  color: #ffffff;
+}
+
+body.dark .weatherTable td{
+  color: #e5e7eb;
+}
+
+body.dark .weatherTable th,
+body.dark .weatherTable td{
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Controls / inputs */
+body.dark .controls select,
+body.dark .controls button,
+body.dark .tank-controls input,
+body.dark .login-card input {
+  background: rgba(255,255,255,0.08);
+  color: #ffffff;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+/* Placeholder */
+body.dark input::placeholder{
+  color: rgba(255,255,255,0.65);
+}
+
+/* Login card */
+body.dark .login-card{
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: #f3f4f6;
+}
+
+/* Modal / popup */
+body.dark .modal-content{
+  background: rgba(15, 23, 42, 0.92);
+  color: #f9fafb;
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+body.dark .modal-content h3,
+body.dark .modal-content p,
+body.dark .close-modal{
+  color: #ffffff;
+}
+
+/* Table/text blocks that stay too dark */
+body.dark .card.big,
+body.dark .card.big p,
+body.dark .card.big li {
+  color: #e5e7eb;
+}

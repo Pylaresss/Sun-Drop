@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     live: document.getElementById("page-live"),
     history: document.getElementById("page-history"),
     energy: document.getElementById("page-energy"),
+    warning: document.getElementById("page-warning"),
     weather: document.getElementById("page-weather"),
     plants: document.getElementById("page-plants"),
     tank: document.getElementById("page-tank"),
@@ -54,6 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (pageKey === "history") setTimeout(() => renderHistory?.(), 150);
     if (pageKey === "energy") setTimeout(() => renderEnergy?.(), 150);
     if (pageKey === "weather") setTimeout(() => updateWeatherAlakamisy?.(), 150);
+    if (pageKey === "warning") setTimeout(() => updateWarnings?.(), 150);
 
     closeMenu();
   });
@@ -71,6 +73,134 @@ const energyReadAPIKey = "KTI0IKIKUC496ADS";
 function setText(id, txt) {
   const el = document.getElementById(id);
   if (el) el.innerText = txt;
+}
+
+function setBadge(id, text, cls){
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerText = text;
+  el.classList.remove("warning-ok", "warning-alert", "warning-mid");
+  el.classList.add(cls);
+}
+
+// Simple SLA battery percentage estimation from voltage
+function batteryPercentFromVoltage(v){
+  if (!Number.isFinite(v)) return NaN;
+
+  // Approximation for 12V lead-acid battery
+  const vMin = 11.8;
+  const vMax = 12.8;
+
+  let p = ((v - vMin) / (vMax - vMin)) * 100;
+  p = Math.max(0, Math.min(100, p));
+  return p;
+}
+
+function updateBatteryVisual(percent){
+  const fill = document.getElementById("batteryFill");
+  if (!fill || !Number.isFinite(percent)) return;
+
+  const p = Math.max(0, Math.min(100, percent));
+  fill.style.width = `${p}%`;
+
+  let color = "#22c55e";
+  if (p <= 20) color = "#ef4444";
+  else if (p <= 40) color = "#f59e0b";
+
+  fill.style.background = color;
+}
+
+async function updateWarnings() {
+  try {
+    // -------- Main channel data --------
+    const mainUrl = `https://api.thingspeak.com/channels/${channelID}/feeds.json?api_key=${readAPIKey}&results=20`;
+    const mainResponse = await fetch(mainUrl, { cache: "no-store" });
+    const mainData = await mainResponse.json();
+    const mainFeeds = mainData.feeds || [];
+
+    function lastValidFromFeeds(feeds, field) {
+      for (let i = feeds.length - 1; i >= 0; i--) {
+        const v = feeds[i][field];
+        if (v !== null && v !== "" && v !== undefined) return parseFloat(v);
+      }
+      return NaN;
+    }
+
+    const temperature = lastValidFromFeeds(mainFeeds, "field1");
+    const tankPercent = lastValidFromFeeds(mainFeeds, "field5");
+
+    // -------- Energy channel data --------
+    const energyUrl = `https://api.thingspeak.com/channels/${energyChannelID}/feeds.json?api_key=${energyReadAPIKey}&results=20`;
+    const energyResponse = await fetch(energyUrl, { cache: "no-store" });
+    const energyData = await energyResponse.json();
+    const energyFeeds = energyData.feeds || [];
+
+    const pvPower = lastValidFromFeeds(energyFeeds, "field3");
+    const batteryVoltage = lastValidFromFeeds(energyFeeds, "field4");
+
+    // -------- Battery warning --------
+    const batteryPercent = batteryPercentFromVoltage(batteryVoltage);
+
+    setText("batteryPercentText", Number.isFinite(batteryPercent) ? `${batteryPercent.toFixed(0)} %` : "-- %");
+    setText("batteryVoltageText", Number.isFinite(batteryVoltage) ? `${batteryVoltage.toFixed(2)} V` : "-- V");
+    updateBatteryVisual(batteryPercent);
+
+    if (Number.isFinite(batteryPercent) && batteryPercent <= 20) {
+      setBadge("batteryBadge", "ALERT", "warning-alert");
+      setText("batteryWarningText", "Attention charge batterie = 20% or lower. Please reduce irrigation or wait for solar charging.");
+    } else if (Number.isFinite(batteryPercent) && batteryPercent <= 40) {
+      setBadge("batteryBadge", "LOW", "warning-mid");
+      setText("batteryWarningText", "Battery charge is getting low. Monitor the system carefully.");
+    } else {
+      setBadge("batteryBadge", "OK", "warning-ok");
+      setText("batteryWarningText", "Battery charge level is normal.");
+    }
+
+    // -------- Solar panel warning --------
+    setText("pvPowerText", Number.isFinite(pvPower) ? `${pvPower.toFixed(2)} W` : "-- W");
+
+    if (Number.isFinite(pvPower) && pvPower < 1.0) {
+      setBadge("pvBadge", "ALERT", "warning-alert");
+      setText("pvWarningText", "Solar panel power dropped unexpectedly. The panel may be covered or dusty. Please inspect and clean the panel.");
+    } else if (Number.isFinite(pvPower) && pvPower < 2.5) {
+      setBadge("pvBadge", "LOW", "warning-mid");
+      setText("pvWarningText", "Solar panel power is low. Check weather conditions or possible shading.");
+    } else {
+      setBadge("pvBadge", "OK", "warning-ok");
+      setText("pvWarningText", "Solar panel power is normal.");
+    }
+
+    // -------- Water tank warning --------
+    setText("tankWarningPercent", Number.isFinite(tankPercent) ? `${tankPercent.toFixed(0)} %` : "-- %");
+
+    if (Number.isFinite(tankPercent) && tankPercent <= 20) {
+      setBadge("tankBadge", "ALERT", "warning-alert");
+      setText("tankWarningText", "Water tank level is critically low. Refill is required before irrigation.");
+    } else if (Number.isFinite(tankPercent) && tankPercent <= 40) {
+      setBadge("tankBadge", "LOW", "warning-mid");
+      setText("tankWarningText", "Water tank level is low. Irrigation may soon be limited.");
+    } else {
+      setBadge("tankBadge", "OK", "warning-ok");
+      setText("tankWarningText", "Water tank level is sufficient.");
+    }
+
+    // -------- Temperature warning --------
+    setText("tempWarningValue", Number.isFinite(temperature) ? `${temperature.toFixed(1)} °C` : "-- °C");
+
+    if (Number.isFinite(temperature) && temperature >= 30) {
+      setBadge("tempBadge", "HOT", "warning-alert");
+      setText("tempWarningText", "Temperature is high. Irrigation during peak heat may increase evaporation losses.");
+    } else if (Number.isFinite(temperature) && temperature >= 27) {
+      setBadge("tempBadge", "WARM", "warning-mid");
+      setText("tempWarningText", "Temperature is elevated. Consider postponing irrigation to cooler hours.");
+    } else {
+      setBadge("tempBadge", "OK", "warning-ok");
+      setText("tempWarningText", "Temperature conditions are acceptable.");
+    }
+
+  } catch (err) {
+    console.error("updateWarnings error:", err);
+  }
 }
 
 function updateTankVisual(percent) {
@@ -577,3 +707,10 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleBtn.innerText = isDark ? "☀️" : "🌙";
   });
 });
+
+setInterval(() => {
+  const warningPage = document.getElementById("page-warning");
+  if (warningPage && warningPage.classList.contains("active")) {
+    updateWarnings();
+  }
+}, 10000);

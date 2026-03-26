@@ -32,7 +32,7 @@
     <a href="#" class="navlink" data-page="weather">🌦️ Weather forecast</a>
     <a href="#" class="navlink" data-page="warning">⚠️ Warnings</a>
     <a href="#" class="navlink" data-page="plants">🌱 Plant profiles</a>
-    <a href="#" class="navlink" data-page="tank">💧 Water tank visual</a>
+    <a href="#" class="navlink" data-page="tank">💧 Water tank monitoring</a>
     <a href="#" class="navlink" data-page="about">ℹ️ About project</a>
     <button class="logout-btn" onclick="logout()">🚪 Logout</button>
   </nav>
@@ -120,62 +120,68 @@
     </section>
 
 
-    <!-- PAGE 3 : ENERGY MONITORING -->
-    <section class="page" id="page-energy">
-      <div class="energy-tabs">
-        <button class="energy-tab active" data-energy="pv">PV</button>
-        <button class="energy-tab" data-energy="battery">Battery</button>
-        <button class="energy-tab" data-energy="system">System</button>
+<!-- PAGE 3 : ENERGY MONITORING -->
+<section class="page" id="page-energy">
+  <div class="energy-tabs">
+    <button class="energy-tab active" data-energy="pv">Panneau solaire</button>
+    <button class="energy-tab" data-energy="battery">Batterie</button>
+    <button class="energy-tab" data-energy="system">Système</button>
+  </div>
+
+  <div class="card big">
+    <h2>⚡ Suivi énergétique</h2>
+
+    <div class="energy-grid">
+      <!-- PANNEAU SOLAIRE -->
+      <div class="chartCard energy-group energy-pv">
+        <h3>Tension PV (V)</h3>
+        <canvas id="e1"></canvas>
       </div>
-      <div class="card big">
-        <h2>⚡ Energy monitoring</h2>
 
-<div class="energy-grid">
-  <!-- PV -->
-  <div class="chartCard energy-group energy-pv">
-    <h3>PV Voltage (V)</h3>
-    <canvas id="e1"></canvas>
-  </div>
-
-  <div class="chartCard energy-group energy-pv">
-    <h3>PV Current (A)</h3>
-    <canvas id="e2"></canvas>
-  </div>
-
-  <div class="chartCard energy-group energy-pv">
-    <h3>PV Power (W)</h3>
-    <canvas id="e3"></canvas>
-  </div>
-
-  <!-- Battery -->
-  <div class="chartCard energy-group energy-battery hidden">
-    <h3>Battery Voltage (V)</h3>
-    <canvas id="e4"></canvas>
-  </div>
-
-  <div class="chartCard energy-group energy-battery hidden">
-    <h3>Battery Current (A)</h3>
-    <canvas id="e5"></canvas>
-  </div>
-
-  <div class="chartCard energy-group energy-battery hidden">
-    <h3>Battery Power (W)</h3>
-    <canvas id="e6"></canvas>
-  </div>
-
-  <!-- System -->
-  <div class="chartCard energy-group energy-system hidden">
-    <h3>System Voltage (V)</h3>
-    <canvas id="e7"></canvas>
-  </div>
-
-  <div class="chartCard energy-group energy-system hidden">
-    <h3>System Current (A)</h3>
-    <canvas id="e8"></canvas>
-  </div>
-</div>
+      <div class="chartCard energy-group energy-pv">
+        <h3>Courant PV (A)</h3>
+        <canvas id="e2"></canvas>
       </div>
-    </section>
+
+      <div class="chartCard energy-group energy-pv">
+        <h3>Puissance PV (W) – Calculée</h3>
+        <canvas id="e3"></canvas>
+      </div>
+
+      <!-- BATTERIE -->
+      <div class="chartCard energy-group energy-battery hidden">
+        <h3>Tension batterie (V)</h3>
+        <canvas id="e4"></canvas>
+      </div>
+
+      <div class="chartCard energy-group energy-battery hidden">
+        <h3>Courant batterie (A)</h3>
+        <canvas id="e5"></canvas>
+      </div>
+
+      <div class="chartCard energy-group energy-battery hidden">
+        <h3>Puissance batterie (W)</h3>
+        <canvas id="e6"></canvas>
+      </div>
+
+      <!-- SYSTÈME -->
+      <div class="chartCard energy-group energy-system hidden">
+        <h3>Tension système (V)</h3>
+        <canvas id="e7"></canvas>
+      </div>
+
+      <div class="chartCard energy-group energy-system hidden">
+        <h3>Courant système (A)</h3>
+        <canvas id="e8"></canvas>
+      </div>
+
+      <div class="chartCard energy-group energy-system hidden">
+        <h3>Puissance système (W)</h3>
+        <canvas id="e9"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
 
     <!-- PAGE : WARNINGS -->
     <section class="page" id="page-warning">
@@ -365,12 +371,16 @@
       </div>
     </section>
 
-    <!-- PAGE 5 : WATER TANK VISUAL -->
-    <section class="page" id="page-tank">
-      <div class="card big tank-page-card">
-        <h2>💧 Water tank visual</h2>
-        <p class="hint">Water tank simulation with manual increase and decrease.</p>
+<!-- PAGE 5 : WATER TANK VISUAL -->
+<section class="page" id="page-tank">
+  <div class="card big tank-page-card">
+    <h2>💧 Water tank informations</h2>
+    <p class="hint">Water tank simulation with manual increase and decrease.</p>
 
+    <div class="tank-dashboard-layout">
+
+      <!-- LEFT SIDE : WATER TANK SIMULATION -->
+      <div class="tank-panel">
         <div class="tank-visual-wrapper">
           <div class="tank-visual">
             <div class="tank-water" id="tankWater">
@@ -394,13 +404,49 @@
             <input type="number" id="tankAmount" min="1" max="100" value="10" disabled>
 
             <div class="tank-buttons">
-              <button id="addWaterBtn" disabled>Pump water</button>
-              <button id="removeWaterBtn" disabled>Irrigate field</button>
+              <button id="addWaterBtn">Pump water</button>
+              <button id="removeWaterBtn">Irrigate field</button>
             </div>
           </div>
         </div>
       </div>
-    </section>
+
+      <!-- RIGHT SIDE : WATER CONSUMPTION VISUAL -->
+      <div class="usage-panel">
+        <div class="water-usage-card">
+          <h3>🚿 Water consumption today</h3>
+
+          <div class="usage-gauge">
+            <div class="usage-ring" id="waterUsageRing">
+              <div class="usage-ring-inner">
+                <span id="waterUsagePercent">26%</span>
+              </div>
+            </div>
+          </div>
+
+          <p class="usage-value" id="waterUsageLiters">128 L used today</p>
+          <p class="usage-subtext" id="waterUsageAdvice">Normal daily consumption</p>
+
+          <div class="usage-mini-stats">
+            <div class="usage-stat-box">
+              <span class="usage-stat-label">Water saved</span>
+              <strong id="waterSavedToday">32 L</strong>
+            </div>
+            <div class="usage-stat-box">
+              <span class="usage-stat-label">Irrigation cycles</span>
+              <strong id="irrigationCyclesToday">4</strong>
+            </div>
+          </div>
+
+          <a class="download-report-btn" href="SunDrop_Monthly_Summary.xlsx" download>
+            ⬇️ Download monthly Excel summary
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
 
     <!-- PAGE 6 : ABOUT -->
 <section class="page" id="page-about">

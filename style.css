@@ -1276,3 +1276,217 @@ body.dark .battery-body{
 body.dark .battery-cap{
   background: #e5e7eb;
 }
+
+/* ===== TANK + WATER USAGE SIDE BY SIDE ===== */
+.tank-dashboard-layout{
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 28px;
+  align-items: center;
+}
+
+.tank-panel,
+.usage-panel{
+  width: 100%;
+}
+
+.tank-panel{
+  display: flex;
+  justify-content: center;
+}
+
+.usage-panel{
+  display: flex;
+  justify-content: center;
+}
+
+.tank-visual-wrapper{
+  margin-top: 0;
+}
+
+/* ===== WATER USAGE CARD ===== */
+.water-usage-card{
+  width: 100%;
+  max-width: 420px;
+  min-height: 520px;
+  padding: 26px 24px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.82);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.14);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.water-usage-card h3{
+  margin: 0 0 20px 0;
+  font-size: 24px;
+  color: #1f2937;
+}
+
+.usage-gauge{
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.usage-ring{
+  --usage-percent: 26%;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  background: conic-gradient(
+    #16a34a 0 var(--usage-percent),
+    rgba(0,0,0,0.10) var(--usage-percent) 100%
+  );
+  display: grid;
+  place-items: center;
+  transition: background 0.6s ease;
+}
+
+.usage-ring-inner{
+  width: 118px;
+  height: 118px;
+  border-radius: 50%;
+  background: white;
+  display: grid;
+  place-items: center;
+  box-shadow: inset 0 0 12px rgba(0,0,0,0.06);
+}
+
+#waterUsagePercent{
+  font-size: 28px;
+  font-weight: 800;
+  color: #1f2937;
+}
+
+.usage-value{
+  margin: 8px 0 6px 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.usage-subtext{
+  margin: 0 0 20px 0;
+  font-size: 15px;
+  opacity: 0.8;
+}
+
+.usage-mini-stats{
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.usage-stat-box{
+  background: rgba(37, 99, 235, 0.08);
+  border-radius: 14px;
+  padding: 14px 10px;
+}
+
+.usage-stat-label{
+  display: block;
+  font-size: 13px;
+  opacity: 0.75;
+  margin-bottom: 6px;
+}
+
+.usage-stat-box strong{
+  font-size: 20px;
+  color: #1f2937;
+}
+
+.download-report-btn{
+  display: inline-block;
+  padding: 12px 18px;
+  border-radius: 14px;
+  background: #2563eb;
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.download-report-btn:hover{
+  transform: translateY(-2px);
+  opacity: 0.92;
+}
+
+/* ===== DARK MODE ===== */
+body.dark .water-usage-card{
+  background: linear-gradient(
+    135deg,
+    rgba(30, 41, 59, 0.72),
+    rgba(15, 23, 42, 0.58)
+  );
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+body.dark .usage-ring-inner{
+  background: #0f172a;
+}
+
+body.dark #waterUsagePercent,
+body.dark .usage-value,
+body.dark .usage-stat-box strong,
+body.dark .water-usage-card h3{
+  color: #f8fafc;
+}
+
+body.dark .usage-stat-box{
+  background: rgba(59,130,246,0.14);
+}
+
+body.dark .download-report-btn{
+  background: #1d4ed8;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 980px){
+  .tank-dashboard-layout{
+    grid-template-columns: 1fr;
+  }
+
+  .water-usage-card{
+    min-height: auto;
+  }
+}
+
+/* ===== ENERGY MONITORING ===== */
+.energy-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.energy-tabs{
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.energy-tab{
+  padding: 10px 18px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.85);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.10);
+}
+
+.energy-tab.active{
+  background: #16a34a;
+  color: white;
+}
+
+.hidden{
+  display: none;
+}

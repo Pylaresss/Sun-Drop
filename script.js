@@ -67,8 +67,8 @@ document.addEventListener("DOMContentLoaded", () => {
 const channelID = "3278360";
 const readAPIKey = "ES3N0P9JR628IAKY"; // leave "" if channel is public
 
-const energyChannelID = "3292183";
-const energyReadAPIKey = "KTI0IKIKUC496ADS";
+const energyChannelID = "3311099";
+const energyReadAPIKey = "OWUPWHVM1FB4GIN9";
 
 function setText(id, txt) {
   const el = document.getElementById(id);
@@ -336,14 +336,19 @@ async function fetchHistory(results = 120) {
   return data.feeds || [];
 }
 
-function buildSeries(feeds, fieldName) {
+function buildSeries(feeds, field) {
   const labels = [];
   const values = [];
 
-  for (const f of feeds) {
-    labels.push(f.created_at ? f.created_at.slice(11, 16) : ""); // HH:MM
-    values.push(parseNumber(f[fieldName]));
-  }
+  feeds.forEach((f) => {
+    const value = parseFloat(f[field]);
+
+    if (!isNaN(value)) {
+      labels.push(f.created_at.slice(11, 16)); // HH:MM
+      values.push(Math.abs(value));
+    }
+  });
+
   return { labels, values };
 }
 
@@ -393,33 +398,65 @@ async function renderHistory() {
 }
 
 async function fetchEnergyHistory(results = 120) {
-  const url = `https://api.thingspeak.com/channels/${energyChannelID}/feeds.json?api_key=${energyReadAPIKey}&results=${results}`;
+  const url = energyReadAPIKey && energyReadAPIKey.trim() !== ""
+    ? `https://api.thingspeak.com/channels/${energyChannelID}/feeds.json?api_key=${energyReadAPIKey}&results=${results}`
+    : `https://api.thingspeak.com/channels/${energyChannelID}/feeds.json?results=${results}`;
+
   const r = await fetch(url, { cache: "no-store" });
   const data = await r.json();
   return data.feeds || [];
 }
 
+function buildComputedPowerSeries(feeds, voltageField, currentField) {
+  const labels = [];
+  const values = [];
+
+  feeds.forEach((f) => {
+    const v = parseFloat(f[voltageField]);
+    const i = parseFloat(f[currentField]);
+
+    if (!isNaN(v) && !isNaN(i)) {
+      labels.push(f.created_at ? f.created_at.slice(11, 16) : "");
+      values.push(v * i);
+    }
+  });
+
+  return { labels, values };
+}
+
 async function renderEnergy() {
   const results = 120;
+
+  // ✅ D'abord on récupère les données
   const feeds = await fetchEnergyHistory(results);
 
-  const s1 = buildSeries(feeds, "field1"); // PV Voltage
-  const s2 = buildSeries(feeds, "field2"); // PV Current
-  const s3 = buildSeries(feeds, "field3"); // PV Power
-  const s4 = buildSeries(feeds, "field4"); // Battery Voltage
-  const s5 = buildSeries(feeds, "field5"); // Battery Current
-  const s6 = buildSeries(feeds, "field6"); // Battery Power
-  const s7 = buildSeries(feeds, "field7"); // System Voltage
-  const s8 = buildSeries(feeds, "field8"); // System Current
+  console.log("Energy feeds:", feeds);
 
-  makeChart("e1", s1.labels, s1.values);
-  makeChart("e2", s2.labels, s2.values);
-  makeChart("e3", s3.labels, s3.values);
-  makeChart("e4", s4.labels, s4.values);
-  makeChart("e5", s5.labels, s5.values);
-  makeChart("e6", s6.labels, s6.values);
-  makeChart("e7", s7.labels, s7.values);
-  makeChart("e8", s8.labels, s8.values);
+  // ✅ Ensuite on construit les séries
+  const pvVoltage = buildSeries(feeds, "field1");
+  const pvCurrent = buildSeries(feeds, "field2");
+  const pvPowerCalculated = buildComputedPowerSeries(feeds, "field1", "field2");
+
+  const battVoltage = buildSeries(feeds, "field3");
+  const battCurrent = buildSeries(feeds, "field4");
+  const battPower = buildSeries(feeds, "field5");
+
+  const sysVoltage = buildSeries(feeds, "field6");
+  const sysCurrent = buildSeries(feeds, "field7");
+  const sysPower = buildSeries(feeds, "field8");
+
+  // ✅ Puis on affiche les graphes
+  makeChart("e1", pvVoltage.labels, pvVoltage.values);
+  makeChart("e2", pvCurrent.labels, pvCurrent.values);
+  makeChart("e3", pvPowerCalculated.labels, pvPowerCalculated.values);
+
+  makeChart("e4", battVoltage.labels, battVoltage.values);
+  makeChart("e5", battCurrent.labels, battCurrent.values);
+  makeChart("e6", battPower.labels, battPower.values);
+
+  makeChart("e7", sysVoltage.labels, sysVoltage.values);
+  makeChart("e8", sysCurrent.labels, sysCurrent.values);
+  makeChart("e9", sysPower.labels, sysPower.values);
 }
 
 // History controls
@@ -607,6 +644,46 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 // ===================== WATER TANK SIMULATION =====================
+// ===================== WATER USAGE VISUAL =====================
+const TANK_CAPACITY_L = 500;
+let todayWaterUsedLiters = 128;
+let todayWaterSavedLiters = 32;
+let todayIrrigationCycles = 4;
+
+function updateWaterUsageVisual(liters) {
+  const usageLiters = document.getElementById("waterUsageLiters");
+  const usagePercent = document.getElementById("waterUsagePercent");
+  const usageAdvice = document.getElementById("waterUsageAdvice");
+  const usageRing = document.getElementById("waterUsageRing");
+  const waterSavedToday = document.getElementById("waterSavedToday");
+  const irrigationCyclesToday = document.getElementById("irrigationCyclesToday");
+
+  if (!usageLiters || !usagePercent || !usageAdvice || !usageRing) return;
+
+  const dailyReferenceL = 500;
+  const pct = Math.max(0, Math.min((liters / dailyReferenceL) * 100, 100));
+
+  usageLiters.innerText = `${Math.round(liters)} L used today`;
+  usagePercent.innerText = `${Math.round(pct)}%`;
+  usageRing.style.setProperty("--usage-percent", `${pct}%`);
+
+  if (pct < 35) {
+    usageAdvice.innerText = "Low consumption today";
+  } else if (pct < 75) {
+    usageAdvice.innerText = "Normal daily consumption";
+  } else {
+    usageAdvice.innerText = "High consumption today";
+  }
+
+  if (waterSavedToday) {
+    waterSavedToday.innerText = `${Math.round(todayWaterSavedLiters)} L`;
+  }
+
+  if (irrigationCyclesToday) {
+    irrigationCyclesToday.innerText = `${todayIrrigationCycles}`;
+  }
+}
+
 let simulatedTankLevel = 50;
 let tankMode = "automatic"; // automatic | manual
 
@@ -639,6 +716,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Niveau initial
   updateTankVisual(simulatedTankLevel);
   updateTankControlsState();
+  updateWaterUsageVisual(todayWaterUsedLiters);
 
   tankModeBtn?.addEventListener("click", () => {
     tankMode = tankMode === "automatic" ? "manual" : "automatic";
@@ -654,11 +732,19 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   removeWaterBtn?.addEventListener("click", () => {
-    if (tankMode !== "manual") return;
+  if (tankMode !== "manual") return;
 
-    const amount = getInputAmount();
-    simulatedTankLevel = Math.max(0, simulatedTankLevel - amount);
-    updateTankVisual(simulatedTankLevel);
+  const amount = getInputAmount();
+  simulatedTankLevel = Math.max(0, simulatedTankLevel - amount);
+
+  // fictive water consumption update
+  const litersUsed = amount * (TANK_CAPACITY_L / 100);
+  todayWaterUsedLiters += litersUsed;
+  todayWaterSavedLiters += litersUsed * 0.15;
+  todayIrrigationCycles += 1;
+
+  updateTankVisual(simulatedTankLevel);
+  updateWaterUsageVisual(todayWaterUsedLiters);
   });
 });
 
